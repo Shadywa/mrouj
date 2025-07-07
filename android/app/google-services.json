@@ -1,0 +1,67 @@
+{
+  "project_info": {
+    "project_number": "23741421919",
+    "project_id": "eljudymarket",
+    "storage_bucket": "eljudymarket.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:23741421919:android:e6fc6c014f9a7487c0beea",
+        "android_client_info": {
+          "package_name": "com.elmrouj.crm.attendance_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDvN-TWudfTpd5YKkGqFg7ggTfIyFxljcY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:23741421919:android:46e294f159efcd3ec0beea",
+        "android_client_info": {
+          "package_name": "com.example.elnada_market"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDvN-TWudfTpd5YKkGqFg7ggTfIyFxljcY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:23741421919:android:d516d48bec0b6fc1c0beea",
+        "android_client_info": {
+          "package_name": "com.example.our_payment_creator"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDvN-TWudfTpd5YKkGqFg7ggTfIyFxljcY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
