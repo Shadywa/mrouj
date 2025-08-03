@@ -102,7 +102,6 @@ class _AddClientScreenState extends State<AddClientScreen> {
       'برمجة تطبيق',
       'تصميم موقع',
       'استشارة تسويقية',
-      // أضف المزيد حسب الحاجة
     ];
 
     return Directionality(

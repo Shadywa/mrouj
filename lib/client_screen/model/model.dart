@@ -133,6 +133,40 @@ class WorkComment {
   };
 }
 
+class GeneralComment {
+  final String userId;
+  final String userName;
+  final String date;
+  final String comment;
+
+  GeneralComment({
+    required this.userId,
+    required this.date,
+    required this.comment,
+    required this.userName,
+  });
+
+  factory GeneralComment.fromJson(dynamic json) {
+    if (json is String) {
+      final decoded = jsonDecode(json);
+      return GeneralComment(
+        date: decoded['date'],
+        userId: decoded['user_id'],
+        comment: decoded['comment'],
+        userName: decoded['user_name'] ?? '',
+      );
+    }
+    return GeneralComment(
+      date: json['date'] ?? DateTime.now().toString().substring(0, 16),
+      userId: json['user_id'],
+      comment: json['comment'],
+      userName: json['user_name'] ?? '',
+    );
+  }
+
+  Map<String, dynamic> toJson() => {'user_id': userId, 'comment': comment};
+}
+
 class ClientModel {
   final String id;
   final String name;
@@ -155,6 +189,9 @@ class ClientModel {
   final List<WorkComment>? workComments;
   final List<AccountComment>? accountComments;
   final List<SocialMediaComment>? socialMediaComments;
+  final bool? boolIsInSocial;
+  final bool? boolIsInAccount;
+  final List<GeneralComment>? generalComments;
 
   ClientModel({
     required this.id,
@@ -178,6 +215,9 @@ class ClientModel {
     this.accountComments,
     this.attachment_socialmedia,
     this.socialMediaComments,
+    this.boolIsInSocial,
+    this.boolIsInAccount,
+    this.generalComments,
   });
 
   factory ClientModel.fromJson(Map<String, dynamic> json) => ClientModel(
@@ -264,6 +304,13 @@ class ClientModel {
                 .map((e) => AccountComment.fromJson(e))
                 .toList()
             : null,
+    boolIsInSocial: json['BoolIsInSocial'] == 1,
+    boolIsInAccount: json['BoolIsInAccount'] == 1,
+    generalComments: json['general_comments'] != null
+        ? (json['general_comments'] as List)
+            .map((e) => GeneralComment.fromJson(e))
+            .toList()
+        : null,
   );
 
   Map<String, dynamic> toJson() => {
@@ -276,5 +323,8 @@ class ClientModel {
     'status': status,
     'last_contact_at': lastContactAt?.toIso8601String(),
     'next_contact_at': nextContactAt?.toIso8601String(),
+    'BoolIsInSocial': boolIsInSocial == true ? 1 : 0,
+    'BoolIsInAccount': boolIsInAccount == true ? 1 : 0,
+    'general_comments': generalComments?.map((e) => e.toJson()).toList(),
   };
 }

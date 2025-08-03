@@ -49,6 +49,10 @@ dependencies:
   shimmer: ^3.0.0
   flutter_launcher_icons: 
   firebase_messaging: ^15.2.9
+  image_picker: ^1.1.2
+  permission_handler: ^12.0.1
+  path_provider: ^2.1.5
+  just_audio: ^0.9.37
 
 dev_dependencies:
   flutter_test:
@@ -78,6 +82,7 @@ flutter:
   assets:
     - assets/
     - assets/img/
+    - assets/noti/notification.mp3
   
 
   # An image asset can refer to one or more resolution-specific "variants", see

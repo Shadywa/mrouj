@@ -1,15 +1,16 @@
 import 'dart:developer';
+import 'package:attendance_app/client_screen/bloc/update_bloc/bloc.dart';
+import 'package:attendance_app/client_screen/model/model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:dio/dio.dart';
-import '../model/model.dart';
-import '../bloc/update_bloc/bloc.dart';
 
-class WorkCommentsScreen extends StatefulWidget {
+
+class GeneralWorkCommentsScreen extends StatefulWidget {
   final String userName;
   final String userRole;
   final ClientModel client;
-  const WorkCommentsScreen({
+  const GeneralWorkCommentsScreen({
     super.key,
     required this.client,
     required this.userName,
@@ -17,45 +18,18 @@ class WorkCommentsScreen extends StatefulWidget {
   });
 
   @override
-  State<WorkCommentsScreen> createState() => _WorkCommentsScreenState();
+  State<GeneralWorkCommentsScreen> createState() => _WorkCommentsScreenState();
 }
 
-class _WorkCommentsScreenState extends State<WorkCommentsScreen> {
+class _WorkCommentsScreenState extends State<GeneralWorkCommentsScreen> {
   final commentController = TextEditingController();
-  List<WorkComment> workComments = [];
+  List<GeneralComment> workComments = [];
 
   @override
   void initState() {
     super.initState();
-    if (widget.userRole.trim().toLowerCase() == 'finance') {
-      workComments =
-          List<AccountComment>.from(widget.client.accountComments ?? [])
-              .map(
-                (e) => WorkComment(
-                  userId: e.userId,
-                  comment: e.comment,
-                  date: e.date,
-                  userName: e.userName,
-                ),
-              )
-              .toList();
-    } else if (widget.userRole.trim().toLowerCase() == 'sales') {
-      workComments = List<WorkComment>.from(widget.client.workComments ?? []);
-    } else if (widget.userRole.trim().toLowerCase() == 'social') {
-      workComments =
-          List<AccountComment>.from(widget.client.workComments ?? [])
-              .map(
-                (e) => WorkComment(
-                  userId: e.userId,
-                  comment: e.comment,
-                  date: e.date,
-                  userName: e.userName,
-                ),
-              )
-              .toList();
-    } else {
-      workComments = [];
-    }
+  
+      workComments = widget.client.generalComments ?? [];
   }
 
   @override
@@ -77,7 +51,7 @@ class _WorkCommentsScreenState extends State<WorkCommentsScreen> {
               if (state is ClientActionSuccess) {
                 setState(() {
                   workComments.add(
-                    WorkComment(
+                    GeneralComment(
                       userName: '',
                       userId: '', // سيملأه السيرفر أو تجاهله في العرض
                       comment: commentController.text.trim(),
@@ -119,7 +93,7 @@ class _WorkCommentsScreenState extends State<WorkCommentsScreen> {
                                         children: [
                                           Row(
                                             children: [
-                                              Text('بواسطة: ${c.userName} '),
+                                              Text('بواسطة: ${c.userName } '),
                                             ],
                                           ),
                                           Spacer(),
@@ -166,23 +140,17 @@ class _WorkCommentsScreenState extends State<WorkCommentsScreen> {
                           ),
                         ),
                         onPressed: () {
-                          log(widget.userRole);
-                          final userRole = widget.userRole.trim().toLowerCase();
+                         
 
-                          List<String> uids = [];
+                          List<String> uids = [
+  ...?widget.client.attachmentSales,
+  ...?widget.client.attachment_account,
+  ...?widget.client.attachment_socialmedia,
+];
 
-                          if (userRole == 'finance') {
-                            uids = widget.client.attachment_account ?? [];
-                          } else if (userRole == 'sales') {
-                            uids = widget.client.attachmentSales ?? [];
-                          } else if (userRole == 'social') {
-                            uids =
-                                widget.client.attachmentSales ??
-                                []; // أو استبدلها بالمتغير الصح إن كان فيه متغير ثاني للسوشيال
-                          }
 
                           BlocProvider.of<ClientActionBloc>(context).add(
-                            AddWorkCommentEvent(
+                            AddGeneralWorkCommentEvent(
                               uids: uids,
                               clientId: widget.client.id,
                               comment: commentController.text.trim(),

@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:attendance_app/firebase_options.dart';
 import 'package:attendance_app/start.dart';
+import 'package:attendance_app/tasks/sub/sub_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -11,7 +12,8 @@ import 'package:awesome_dialog/awesome_dialog.dart';
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
   log('إشعار في الخلفية: ${message.notification?.title}');
-}
+}  
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

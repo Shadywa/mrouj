@@ -22,6 +22,103 @@ class SalesUser {
     final List data = response.data;
     return data.map((e) => SalesUser(id: e['id'], name: e['name'])).toList();
   }
+  
+
+  static Future<List<SalesUser>> fetchSocialUsers() async {
+    final response = await Dio().get(
+      'https://drivo.elmoroj.com/api/users/social',
+    );
+    final List data = response.data;
+    return data.map((e) => SalesUser(id: e['id'], name: e['name'])).toList();
+  }
+  static Future<List<SalesUser>> fetchTecnicalUsers() async {
+    final response = await Dio().get(
+      'https://drivo.elmoroj.com/api/usersITAndgraphicdesignerAndmotiongraphics',
+    );
+    final List data = response.data;
+    log(data.toString());
+    return data.map((e) => SalesUser(id: e['id'], name: e['name'])).toList();
+  }
+
+}
+
+
+void showTecnialDialog(BuildContext context, String clientId) async {
+  final salesUsers = await SalesUser.fetchTecnicalUsers();
+  final selected = <String>{};
+
+  showDialog(
+    context: context,
+    builder: (context) {
+      return Directionality(
+        textDirection: TextDirection.rtl,
+        child: StatefulBuilder(
+          builder:
+              (context, setState) => AlertDialog(
+                title: const Text('إضافة فني للعميل'),
+                content: SizedBox(
+                  width: double.maxFinite,
+                  height: 400,
+                  child: ListView(
+                    children:
+                        salesUsers.map((user) {
+                          return CheckboxListTile(
+                            value: selected.contains(user.id),
+                            title: Text(user.name),
+                            onChanged: (val) {
+                              setState(() {
+                                if (val == true) {
+                                  selected.add(user.id);
+                                } else {
+                                  selected.remove(user.id);
+                                }
+                              });
+                            },
+                          );
+                        }).toList(),
+                  ),
+                ),
+                actions: [
+                  TextButton(
+                    child: const Text('إلغاء'),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                  ElevatedButton(
+                    child: const Text('حفظ'),
+                    onPressed: () async {
+                      for (final salesId in selected) {
+                        final Response = await Dio().post(
+                          'https://drivo.elmoroj.com/api/tasks/$clientId/add-attachment-user',
+                          data: {'user_id': salesId},
+                        );
+                        log('Response: ${Response.data}');
+                        // إرسال إشعار بعد الإضافة
+                        try {
+                          await Dio().post(
+                            'https://us-central1-eljudymarket.cloudfunctions.net/sendNotificationToUsers',
+                            data: {
+                              'uids': [salesId],
+                              'title': 'تاسك جديد',
+                              'body': 'تمت إضافتك مهمه جديده لك',
+                            },
+                            options: Options(headers: {'Content-Type': 'application/json'}),
+                          );
+                        } catch (e) {
+                          log('Notification send error: $e');
+                        }
+                      }
+                      Navigator.pop(context);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('تم إضافة الفني بنجاح')),
+                      );
+                    },
+                  ),
+                ],
+              ),
+        ),
+      );
+    },
+  );
 }
 
 void showSalesDialog(BuildContext context, String clientId) async {
@@ -72,7 +169,21 @@ void showSalesDialog(BuildContext context, String clientId) async {
                           'https://drivo.elmoroj.com/api/customers/$clientId/add-attachment',
                           data: {'sales_id': salesId},
                         );
-                        log('Response: ${Response.data}');
+                        log('Response: \\${Response.data}');
+                        // إرسال إشعار بعد الإضافة
+                        try {
+                          await Dio().post(
+                            'https://us-central1-eljudymarket.cloudfunctions.net/sendNotificationToUsers',
+                            data: {
+                              'uids': [salesId],
+                              'title': 'تمت إضافتك',
+                              'body': 'تمت إضافتك لهذا العميل',
+                            },
+                            options: Options(headers: {'Content-Type': 'application/json'}),
+                          );
+                        } catch (e) {
+                          log('Notification send error: $e');
+                        }
                       }
                       Navigator.pop(context);
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -141,6 +252,20 @@ void showAccountDialog(BuildContext context, String clientId) async {
                             data: {'account_id': salesId},
                           );
                           log('Response: ${Response.data}');
+                          // إرسال إشعار بعد الإضافة
+                          try {
+                            await Dio().post(
+                              'https://us-central1-eljudymarket.cloudfunctions.net/sendNotificationToUsers',
+                              data: {
+                                'uids': [salesId],
+                                'title': 'تمت إضافتك',
+                                'body': 'تمت إضافتك لهذا العميل',
+                              },
+                              options: Options(headers: {'Content-Type': 'application/json'}),
+                            );
+                          } catch (e) {
+                            log('Notification send error: $e');
+                          }
                         }
                         Navigator.pop(context);
                         ScaffoldMessenger.of(context).showSnackBar(
@@ -213,6 +338,20 @@ void showSocialDialog(BuildContext context, String clientId) async {
                           data: {'sales_id': salesId},
                         );
                         log('Response: ${Response.data}');
+                        // إرسال إشعار بعد الإضافة
+                        try {
+                          await Dio().post(
+                            'https://us-central1-eljudymarket.cloudfunctions.net/sendNotificationToUsers',
+                            data: {
+                              'uids': [salesId],
+                              'title': 'تمت إضافتك',
+                              'body': 'تمت إضافتك لهذا العميل',
+                            },
+                            options: Options(headers: {'Content-Type': 'application/json'}),
+                          );
+                        } catch (e) {
+                          log('Notification send error: $e');
+                        }
                       }
                       Navigator.pop(context);
                       ScaffoldMessenger.of(context).showSnackBar(

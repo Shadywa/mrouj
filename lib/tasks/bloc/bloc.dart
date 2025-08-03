@@ -26,6 +26,7 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
       final List data = response.data as List;
       final tasks = data.map((e) => TaskModel.fromJson(e)).toList();
       log('TASKS: ${tasks.length}');
+      log('TASKS: ${tasks.map((e) => e.id).toList()}');
       emit(TaskLoaded(tasks));
     } catch (e) {
       log('Error fetching tasks: $e');

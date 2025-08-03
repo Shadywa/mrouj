@@ -1,30 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:attendance_app/notification/data/model.dart';
 
-class AbsenceNotificationCard extends StatelessWidget {
-  const AbsenceNotificationCard({super.key});
+class NotificationCardHome extends StatelessWidget {
+  final NotificationModel notification;
+
+  const NotificationCardHome({super.key, required this.notification});
 
   @override
   Widget build(BuildContext context) {
     return Directionality(
-      textDirection: TextDirection.rtl, // مهم لجعل النص من اليمين لليسار
+      textDirection: TextDirection.rtl,
       child: Card(
         elevation: 1,
         margin: const EdgeInsets.all(16),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         color: Colors.white,
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // العنوان العلوي مع الجرس
               Row(
                 children: const [
                   Expanded(
                     child: Text(
-                      " اشعار",
+                      "إشعار",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 13,
@@ -35,23 +35,21 @@ class AbsenceNotificationCard extends StatelessWidget {
                   Icon(Icons.notifications_none, color: Colors.grey),
                 ],
               ),
-              SizedBox(height: 12),
-              // عنوان الإشعار
-              const Text(
-                "تحذير: تم تسجيل عقوبة غياب",
-                style: TextStyle(
+              const SizedBox(height: 12),
+              Text(
+                _buildTitle(notification),
+                style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 15,
                   color: Colors.black,
                 ),
               ),
-              SizedBox(height: 8),
-              // التفاصيل
-              const Text(
-                "تم تسجيل عقوبة غياب لك من تاريخ 02-05-2025 إلى تاريخ 03-05-2025. السبب: مخالف للنظام",
-                style: TextStyle(
+              const SizedBox(height: 8),
+              Text(
+                notification.content,
+                style: const TextStyle(
                   fontSize: 13,
-                  color: Color(0xFF6F6F6F), // رمادي متوسط
+                  color: Color(0xFF6F6F6F),
                   height: 1.4,
                 ),
               ),
@@ -60,5 +58,16 @@ class AbsenceNotificationCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  static String _buildTitle(NotificationModel notification) {
+    if (notification.type.contains("work"))
+      return "تنبيه: تعليق جديد على العمل";
+    if (notification.type.contains("attachment"))
+      return "تنبيه: عميل  جديد مضاف";
+    if (notification.type.contains("account_comment"))
+      return "تنبيه: تعليق جديد من الحسايات";
+    if (notification.type.contains("customer")) return "تنبيه بخصوص عميل";
+    return "إشعار جديد";
   }
 }

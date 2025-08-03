@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:attendance_app/botton_navigate/bottom_nav.dart';
 import 'package:attendance_app/home/main_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dio/dio.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -42,6 +42,7 @@ class _RegisterPageState extends State<RegisterPage> {
     'الدعم الفني': 'Support',
     'المبيعات': 'Sales',
     'الحسابات المالية': 'Finance',
+    ' الموشن': 'motion graphics',
   };
 
   Map<String, String> arabicShiftToEnglish = {
@@ -56,26 +57,27 @@ class _RegisterPageState extends State<RegisterPage> {
     setState(() => isLoading = true);
 
     try {
-      UserCredential userCredential = await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(
-            email: emailController.text.trim(),
-            password: passwordController.text.trim(),
-          );
+      // UserCredential userCredential = await FirebaseAuth.instance
+      //     .createUserWithEmailAndPassword(
+      //       email: emailController.text.trim(),
+      //       password: passwordController.text.trim(),
+      //     );
 
-      final uid = userCredential.user!.uid;
+  
+      final  uid = '3kTs6Btxj2QPN8k8Tgxbbs58iz22'; // استخدم معرف
 
-      final fcmToken = await FirebaseMessaging.instance.getToken();
+      // final fcmToken = await FirebaseMessaging.instance.getToken();
 
       final Response = await dio.post(
         cloudFunctionUrl,
         data: {
-          'uid': uid,
+          'uid': '3kTs6Btxj2QPN8k8Tgxbbs58iz22',
           'name': nameController.text.trim(),
           'email': emailController.text.trim(),
           'role': arabicRoleToEnglish[role],
           'department': arabicDeptToEnglish[department],
           'shift': arabicShiftToEnglish[shift],
-          'fcm_token': fcmToken, // أضف هذا السطر
+          'fcm_token': "fcmToken", // أضف هذا السطر
         },
       );
       log(uid);
@@ -103,10 +105,11 @@ class _RegisterPageState extends State<RegisterPage> {
         context,
         MaterialPageRoute(builder: (context) => MainNavigationScreen()),
       );
-    } on FirebaseAuthException catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('❌ فشل في التسجيل: ${e.message}')));
+    // } 
+    // on FirebaseAuthException catch (e) {
+    //   ScaffoldMessenger.of(
+    //     context,
+    //   ).showSnackBar(SnackBar(content: Text('❌ فشل في التسجيل: ${e.message}')));
     } catch (e) {
       log('Error during registration: $e');
       ScaffoldMessenger.of(context).showSnackBar(

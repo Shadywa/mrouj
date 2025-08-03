@@ -9,6 +9,12 @@
     <!-- من Android 13 وأعلى يجب طلب إذن الإشعارات -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
 
+    <!-- أذونات الوصول إلى التخزين -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="32"/>
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO"/>
+
     <application
         android:enableOnBackInvokedCallback="true"
         android:label="المروج"

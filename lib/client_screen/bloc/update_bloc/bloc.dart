@@ -71,6 +71,22 @@ class UpdateClientEvent extends ClientActionEvent {
   List<Object?> get props => [id, name, email, phone, nextContactAt, status];
 }
 
+class AddGeneralWorkCommentEvent extends ClientActionEvent {
+  final String clientId;
+  final String department;
+  final String comment;
+  final List<String> uids;
+  AddGeneralWorkCommentEvent({
+    required this.clientId,
+    required this.comment,
+    required this.uids,
+    required this.department,
+  });
+
+  @override
+  List<Object?> get props => [clientId, comment, uids, department];
+}
+
 // States
 abstract class ClientActionState extends Equatable {
   @override
@@ -104,6 +120,7 @@ class ClientActionBloc extends Bloc<ClientActionEvent, ClientActionState> {
     //   on<ChangeStatusEvent>(_onChangeStatus);
     on<AddWorkCommentEvent>(_onAddWorkComment);
     on<UpdateClientEvent>(_onUpdateClient); // أضف هذا السطر
+    on<AddGeneralWorkCommentEvent>(_onAddGeneralWorkComment);
   }
 
   Future<void> _onAddWorkComment(
@@ -198,6 +215,41 @@ class ClientActionBloc extends Bloc<ClientActionEvent, ClientActionState> {
     } catch (e) {
       log('Error updating client: $e');
       emit(ClientActionError('فشل تحديث بيانات العميل'));
+    }
+  }
+
+  Future<void> _onAddGeneralWorkComment(
+    AddGeneralWorkCommentEvent event,
+    Emitter<ClientActionState> emit,
+  ) async {
+    emit(ClientActionLoading());
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final uid = prefs.getString('uid');
+      final url = 'https://drivo.elmoroj.com/api/customers/${event.clientId}/add-general-comment';
+      await dio.post(url, data: {'user_id': uid, 'comment': event.comment});
+      log('General comment added: ${event.uids} - ${event.comment}');
+      emit(ClientActionSuccess('تم إضافة التعليق العام بنجاح'));
+      if (event.uids.isNotEmpty) {
+        log('Sending notification to uids: ${event.uids}');
+        try {
+          final response = await dio.post(
+            'https://us-central1-eljudymarket.cloudfunctions.net/sendNotificationToUsers',
+            data: jsonEncode({
+              'uids': event.uids,
+              'title': 'تعليق عام جديد',
+              'body': event.comment,
+            }),
+            options: Options(headers: {'Content-Type': 'application/json'}),
+          );
+          log('Response from notification API: \\${response.data}');
+        } catch (e) {
+          log('Notification send error: $e');
+        }
+      }
+    } catch (e) {
+      log('Error adding general comment: $e');
+      emit(ClientActionError('فشل إضافة التعليق العام'));
     }
   }
 }

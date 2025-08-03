@@ -1,7 +1,9 @@
 import 'dart:developer';
 
+import 'package:attendance_app/tasks/create/screen/create_task.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -16,6 +18,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String role = '';
   String department = '';
   String shift = '';
+  int _selectedTab = 0; // 0: المعلومات الشخصية، 1: خاص بالادمن
 
   @override
   void initState() {
@@ -102,9 +105,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
                 children: [
-                  _tabButton('المعلومات الشخصية', true),
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _selectedTab = 0;
+                        });
+                      },
+                      child: _tabButton('المعلومات الشخصية', _selectedTab == 0),
+                    ),
+                  ),
                   const SizedBox(width: 10),
-                  _tabButton('خاص بالادمن', false),
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _selectedTab = 1;
+                        });
+                      },
+                      child: _tabButton('خاص بالادمن', _selectedTab == 1),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -117,16 +138,54 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(25),
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _InfoField(label: 'الاسم', value: name),
-                    _InfoField(label: 'البريد الإلكتروني', value: email),
-                    _InfoField(label: 'القسم', value: department),
-                    _InfoField(label: 'الشيفت', value: shift),
-                    _InfoField(label: 'الوظيفة', value: role),
-                  ],
-                ),
+                child: _selectedTab == 0
+                    ? Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _InfoField(label: 'الاسم', value: name),
+                          _InfoField(label: 'البريد الإلكتروني', value: email),
+                          _InfoField(label: 'القسم', value: department),
+                          _InfoField(label: 'الشيفت', value: shift),
+                          _InfoField(label: 'الوظيفة', value: role),
+                        ],
+                      )
+                    : (role == 'team_leader'
+                        ? Center(
+                            child: GestureDetector(
+                              onTap: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) => CreateTaskScreen(),
+                                  ),
+                                );
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 20, horizontal: 30),
+                                decoration: BoxDecoration(
+                                  color: Colors.deepPurple,
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: const [
+                                    Icon(Icons.add_task, color: Colors.white),
+                                    SizedBox(width: 10),
+                                    Text('إضافة مهمة',
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold)),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          )
+                        : const Center(
+                            child: Text(
+                                'غير مصرح لك بالدخول هنا',
+                                style: TextStyle(color: Colors.grey),
+                              ),
+                          )),
               ),
             ),
           ],
