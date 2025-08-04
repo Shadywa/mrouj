@@ -4,6 +4,7 @@ import 'package:attendance_app/client_screen/bloc/update_bloc/bloc.dart';
 import 'package:attendance_app/client_screen/model/attach.dart';
 import 'package:attendance_app/client_screen/public/screen/public_screen.dart';
 import 'package:attendance_app/client_screen/screen/work_comment.dart';
+import 'package:attendance_app/client_screen/tasks_for_client/screen.dart';
 import 'package:easy_date_timeline/easy_date_timeline.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -406,6 +407,34 @@ class _ClientDetailsScreenState extends State<ClientDetailsScreen> {
                       ),
                     ),
                     const SizedBox(height: 10),
+                         SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        icon: const Icon(Icons.comment, color: Colors.white),
+                        label: const Text(
+                          ' متابعه التاسكات ',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.indigo,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder:
+                                  (_) => TasksScreen(
+                                    customerId: widget.client.id.toString(),
+                              
+                                  ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
                     // زر إضافة مشترك/سيلز
                     SizedBox(
                       width: double.infinity,
