@@ -2,7 +2,7 @@ import 'dart:developer';
 
 import 'package:attendance_app/firebase_options.dart';
 import 'package:attendance_app/start.dart';
-import 'package:attendance_app/tasks/sub/sub_screen.dart';
+import 'package:attendance_app/tasks/sub/create_sub.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';

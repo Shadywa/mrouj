@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:bloc/bloc.dart';
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -21,13 +22,20 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
         'https://drivo.elmoroj.com/api/tasks',
         data: {
           'user_id': uid,
+          'customer_id': event.userId,
           'task_name': event.taskName,
           'description': event.description,
           'start_time': event.startTime,
           'end_time': event.endTime,
           'status': event.status,
         },
+      
       );
+      log(response.toString());
+      log('customer_id: ${event.userId}');
+      log('task_name: ${event.taskName}');
+      log('description: ${event.description}');
+      log('start_time: ${event.startTime}');
       emit(TaskSuccess('تم إضافة المهمة بنجاح'));
     } catch (e) {
       emit(TaskError('فشل إضافة المهمة'));

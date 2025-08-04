@@ -427,7 +427,8 @@ class _ClientDetailsScreenState extends State<ClientDetailsScreen> {
                             MaterialPageRoute(
                               builder:
                                   (_) => TasksScreen(
-                                    customerId: widget.client.id.toString(),
+                                     customerId: 
+                                    widget.client.id.toString(),
                               
                                   ),
                             ),

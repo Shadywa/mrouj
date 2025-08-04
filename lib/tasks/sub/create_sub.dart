@@ -13,11 +13,14 @@ import 'package:image_picker/image_picker.dart';
 class SubStageModel {
   final String userId;
   final String description;
+    final List<String> statusOptions;
+
   final String status;
   final List<String> images; // paths
   SubStageModel({
     required this.userId,
     required this.description,
+    required this.statusOptions,
     required this.status,
     required this.images,
   });
@@ -72,48 +75,50 @@ class SubStageBloc extends Bloc<SubStageEvent, SubStageState> {
       _subStages.removeAt(event.index);
       emit(SubStageInitial(List.from(_subStages)));
     });
-    on<SaveAllSubStagesEvent>((event, emit) async {
+      on<SaveAllSubStagesEvent>((event, emit) async {
       emit(SubStageLoading());
       try {
-        final dio = Dio();
-        final url = 'https://drivo.elmoroj.com/api/tasks/$taskId/subtasks';
-        // نرفع أول مرحلة فقط حسب الشكل المطلوب
         if (_subStages.isEmpty) {
-          emit(SubStageError('لا يوجد مراحل للرفع'));
+          emit( SubStageError('لا يوجد مراحل للرفع'));
           return;
         }
-        final sub = _subStages[0];
-        FormData formData = FormData();
-        formData.fields.add(MapEntry('description', sub.description));
-        for (final opt in sub.status.split(',')) {
-          formData.fields.add(MapEntry('status_options[]', opt.trim()));
+        final dio = Dio();
+        final url = 'https://drivo.elmoroj.com/api/tasks/$taskId/subtasks';
+
+        // Iterate through each sub-stage and send properly formatted FormData
+        for (final sub in _subStages) {
+          // Build initial map with simple fields and array
+          final Map<String, dynamic> dataMap = {
+            'description': sub.description,
+            'status_options[]': sub.statusOptions,
+            'status': sub.status,
+          };
+
+          // Add files to FormData
+          final formData = FormData.fromMap(dataMap);
+          for (final path in sub.images) {
+            formData.files.add(
+              MapEntry(
+                'images[]',
+                await MultipartFile.fromFile(path),
+              ),
+            );
+          }
+
+          final response = await dio.post(url, data: formData);
+          if (response.statusCode != 200) {
+            emit(SubStageError('فشل رفع المرحلة: ${response.statusCode}'));
+            return;
+          }
         }
-        formData.fields.add(MapEntry('status', sub.status));
-        for (int j = 0; j < sub.images.length; j++) {
-          formData.files.add(MapEntry(
-            'images[]',
-            await MultipartFile.fromFile(sub.images[j]),
-          ));
-        }
-        log('--- بيانات المرسلة ---');
-        log(formData.fields.toString());
-        log('--- الصور المرسلة ---');
-        log(formData.files.map((e) => e.value.filename).toList().toString());
-        final response = await dio.post(url, data: formData);
-        log('--- رد السيرفر ---');
-        log(response.statusCode.toString());
-        log(response.data.toString());
-        if (response.statusCode == 200) {
-          emit(SubStageSuccess('تم رفع المرحلة بنجاح'));
-          _subStages.clear();
-          emit(SubStageInitial([]));
-        } else {
-          emit(SubStageError('فشل رفع المرحلة: ${response.statusCode}'));
-        }
+
+        // If all uploads succeeded
+        emit( SubStageSuccess('تم رفع جميع المراحل بنجاح'));
+        _subStages.clear();
+        emit( SubStageInitial([]));
       } catch (e) {
-        log('--- خطأ أثناء رفع البيانات ---');
-        log(e.toString());
-        emit(SubStageError('خطأ أثناء رفع البيانات: $e'));
+        log('خطأ أثناء رفع البيانات: $e');
+        emit(SubStageError('خطأ أثناء رفع البيانات:$e'));
       }
     });
   }
@@ -135,10 +140,10 @@ class _SubStageScreenState extends State<SubStageScreen> {
   List<String> images = [];
   List<String> statusOptions = [];
 
-  Future<String> getUserId() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('uid') ?? '';
-  }
+  // Future<String> getUserId() async {
+  //   final prefs = await SharedPreferences.getInstance();
+  //   return prefs.getString('uid') ?? '';
+  // }
 
   void _showDialog(String msg, Color color) {
     showDialog(
@@ -370,19 +375,20 @@ class _SubStageScreenState extends State<SubStageScreen> {
                                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                                     textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                                   ),
-                                  onPressed: () async {
-                                    if (descController.text.trim().isEmpty || status.isEmpty) return;
-                                    final uid = await getUserId();
-                                    context.read<SubStageBloc>().add(
-                                      AddSubStageEvent(
-                                        SubStageModel(
-                                          userId: uid,
-                                          description: descController.text.trim(),
-                                          status: status,
-                                          images: List.from(images),
-                                        ),
-                                      ),
-                                    );
+                                   onPressed: () async {
+                      if (descController.text.isEmpty || status.isEmpty) return;
+                      // final uid = await getUserId();
+                      context.read<SubStageBloc>().add(
+                            AddSubStageEvent(
+                              SubStageModel(
+                                userId: '',
+                                description: descController.text.trim(),
+                                status: status,
+                                statusOptions: List.from(statusOptions),
+                                images: List.from(images),
+                              ),
+                            ),
+                          );
                                     descController.clear();
                                     setState(() {
                                       status = statusOptions.isNotEmpty ? statusOptions[0] : '';

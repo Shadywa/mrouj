@@ -12,7 +12,8 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 
 class CreateTaskScreen extends StatefulWidget {
-  const CreateTaskScreen({super.key});
+  final String customerId;
+  const CreateTaskScreen({super.key , required this.customerId});
 
   @override
   State<CreateTaskScreen> createState() => _CreateTaskScreenState();
@@ -25,14 +26,17 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
   DateTime? startDate;
   DateTime? endDate;
   String status = 'pending';
-  final String userId = 'GAM8731OOShtDJJxvt9MSMkTkOB2';
-  final List<String> statusList = ['pending', 'done', 'in_progress'];
+  
+  late final String userId;
+   final List<String> statusList = ['pending', 'done', 'in_progress'];
   XFile? pickedImage;
+
+  
 
   @override
   void initState() {
     super.initState();
-  
+    userId = widget.customerId;
   }
 
   void _showDialog(String msg, DialogType type) {

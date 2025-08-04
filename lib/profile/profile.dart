@@ -155,7 +155,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               onTap: () {
                                 Navigator.of(context).push(
                                   MaterialPageRoute(
-                                    builder: (_) => CreateTaskScreen(),
+                                    builder: (_) => CreateTaskScreen( customerId: 'GAM8731OOShtDJJxvt9MSMkTkOB2'),
                                   ),
                                 );
                               },
